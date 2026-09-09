@@ -42,8 +42,6 @@ public class FetchDataService : IFetchDataService
                 return Result.Fail<T>("Json content is empty");
             }
 
-            Console.WriteLine(data);
-
             return Result.Ok(data);
 
         }

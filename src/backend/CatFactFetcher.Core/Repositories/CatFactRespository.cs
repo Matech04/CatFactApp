@@ -11,6 +11,6 @@ public class CatFactRepository: ICatFactRepository
     public Task SaveAsync(string fact, int length)
     {
         
-        return System.IO.File.AppendAllTextAsync("facts.txt", $"{fact} \n");;
+        return System.IO.File.AppendAllTextAsync("facts.txt", $"{DateTime.UtcNow:dd.MM.yyyy HH:mm} | {fact} \n");;
     }
 }

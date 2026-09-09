@@ -13,14 +13,12 @@ public static class CatFactEndpoints
         group.MapPost("/", FetchCatFact);
     }
 
-    private static async Task<IResult> FetchCatFact(IFetchDataService fetchService, ISaveCatFactService saveService)
+    private static async Task<IResult> FetchCatFact(ISaveCatFactService saveService)
     {
-        var result = await fetchService.FetchAsync<CatFactDto>("https://catfact.ninja/fact");
+        var result = await saveService.SaveAsync();
 
         if (result.IsSuccess)
         {
-            await saveService.SaveAsync(result.Value.fact, result.Value.length);
-        
             return Results.Ok();
         }
 
