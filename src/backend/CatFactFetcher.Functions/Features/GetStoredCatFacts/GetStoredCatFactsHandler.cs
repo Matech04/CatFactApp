@@ -1,4 +1,5 @@
-using CatFactFetcher.Functions.Shared.Dto;
+namespace CatFactFetcher.Functions.Features.GetStoredCatFacts;
+
 using FluentResults;
 
 public class GetStoredCatFactsHandler(IFileStorage storage)

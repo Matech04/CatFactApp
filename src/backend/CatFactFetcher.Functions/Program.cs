@@ -1,6 +1,6 @@
 ﻿using CatFactFetcher.Core.Storages;
 using CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
-using CatFactFetcher.Functions.Features.GetStoredCatFactsEndpoint;
+using CatFactFetcher.Functions.Features.GetStoredCatFacts;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;

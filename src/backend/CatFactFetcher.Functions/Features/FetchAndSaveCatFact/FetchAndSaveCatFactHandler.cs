@@ -1,4 +1,3 @@
-using CatFactFetcher.Functions.Shared.Dto;
 using FluentResults;
 
 namespace CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
