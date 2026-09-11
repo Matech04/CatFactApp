@@ -1,6 +1,4 @@
-using CatFactFetcher.Core.Dto;
 using CatFactFetcher.Core.Services;
-using FluentResults;
 
 namespace CatFactFetcher.Core.Endpoints;
 

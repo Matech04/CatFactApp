@@ -13,11 +13,11 @@ public class SaveCatFactService : ISaveCatFactService
 {
 
     private readonly IFetchDataService _fetchDataService;
-    private readonly ICatFactRepository _catFactRepository;
+    private readonly IFileSystemRepository _catFactRepository;
     private readonly ILogger<SaveCatFactService> _logger;
 
 
-    public SaveCatFactService(IFetchDataService fetchDataService, ICatFactRepository catFactRepository, ILogger<SaveCatFactService> logger)
+    public SaveCatFactService(IFetchDataService fetchDataService, IFileSystemRepository catFactRepository, ILogger<SaveCatFactService> logger)
     {
         _fetchDataService = fetchDataService;
         _catFactRepository = catFactRepository;
