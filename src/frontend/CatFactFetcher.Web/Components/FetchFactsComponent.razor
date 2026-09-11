@@ -1,0 +1,87 @@
+@inject HttpClient Http
+
+<div class="container mt-4" style="max-width: 600px;">
+    <h1 class="mb-3">🐱 Fact Fetcher</h1>
+    <p class="text-muted">Kliknij przycisk poniżej, aby pobrać i zapisać nowy fakt o kocie.</p>
+
+    <!-- Przycisk do pobierania -->
+    <button class="btn btn-primary mb-4" @onclick="GetCatFact" disabled="@isLoading">
+        @if (isLoading)
+        {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <span>Pobieranie...</span>
+        }
+        else
+        {
+            <span>🎲 Pobierz fakt</span>
+        }
+    </button>
+
+    <!-- Obsługa błędów (np. 429 Rate Limit lub brak połączenia) -->
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    <!-- Wyświetlanie pobranego faktu -->
+    @if (factDto != null)
+    {
+        <div class="card shadow-sm border-start border-4 border-primary">
+            <div class="card-body">
+                <p class="fs-5 card-text">"@factDto.Fact"</p>
+                <div class="d-flex justify-content-between align-items-center text-muted mt-3 pt-2 border-top">
+                    <small>Długość: <strong>@factDto.Length</strong> znaków</small>
+                    <small class="badge bg-success">Zapisano w repozytorium</small>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private CatFactDto? factDto;
+    private bool isLoading = false;
+    private string? errorMessage;
+
+    private async Task GetCatFact()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            // Strzał do Twojego endpointu w .NET API
+            var response = await Http.PostAsync("/cat-fact", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                factDto = await response.Content.ReadFromJsonAsync<CatFactDto>();
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+            {
+                errorMessage = "⚠️ Przekroczono limit zapytań (Rate Limiter). Spróbuj za chwilę!";
+            }
+            else
+            {
+                errorMessage = $"Błąd serwera: {(int)response.StatusCode} {response.ReasonPhrase}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Nie udało się połączyć z API: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // Klasa DTO dopasowana do odpowiedzi z Twojego backendu
+    public class CatFactDto
+    {
+        public string Fact { get; set; } = string.Empty;
+        public int Length { get; set; }
+    }
+}

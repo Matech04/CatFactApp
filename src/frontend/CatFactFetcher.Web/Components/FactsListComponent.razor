@@ -1,0 +1,105 @@
+@inject HttpClient Http
+
+<div class="container mt-4" style="max-width: 700px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">🐱 Lista Faktów o Kotach</h1>
+        <button class="btn btn-outline-secondary btn-sm" @onclick="GetCatFacts" disabled="@isLoading">
+            🔄 Odśwież
+        </button>
+    </div>
+    
+    <p class="text-muted">Poniżej znajduje się historia zapisanych faktów pobrana z API.</p>
+
+    <!-- Obsługa błędów -->
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    <!-- Stan ładowania -->
+    @if (isLoading)
+    {
+        <div class="d-flex align-items-center gap-2 my-4 text-primary">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>Pobieranie listy faktów...</span>
+        </div>
+    }
+    else if (catFacts != null && catFacts.Any())
+    {
+        <!-- Wyświetlanie listy faktów -->
+        <div class="d-flex flex-column gap-3">
+            @foreach (var fact in catFacts)
+            {
+                <div class="card shadow-sm border-start border-4 border-info">
+                    <div class="card-body">
+                        <p class="fs-5 card-text mb-2">"@fact.Fact"</p>
+                        <div class="d-flex justify-content-between align-items-center text-muted pt-2 border-top">
+                            <small>📅 @fact.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small>
+                            <small class="badge bg-secondary">@fact.Length znaków</small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (catFacts != null && !catFacts.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            Brak faktów do wyświetlenia.
+        </div>
+    }
+</div>
+
+@code {
+    private List<CatFactDto>? catFacts;
+    private bool isLoading = false;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Automatyczne pobranie listy przy załadowaniu komponentu
+        await GetCatFacts();
+    }
+
+    private async Task GetCatFacts()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            // Zapytanie GET pod odpowiedni endpoint
+            var response = await Http.GetAsync("/cat-fact");
+
+            if (response.IsSuccessStatusCode)
+            {
+                catFacts = await response.Content.ReadFromJsonAsync<List<CatFactDto>>();
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+            {
+                errorMessage = "⚠️ Przekroczono limit zapytań (Rate Limiter). Spróbuj za chwilę!";
+            }
+            else
+            {
+                errorMessage = $"Błąd serwera: {(int)response.StatusCode} {response.ReasonPhrase}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Nie udało się połączyć z API: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    public class CatFactDto
+    {
+        public DateTime CreatedAt { get; set; }
+        public string Fact { get; set; } = string.Empty;
+        public int Length { get; set; }
+    }
+}
