@@ -1,6 +1,9 @@
+using System.Threading.RateLimiting;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Azure.Storage.Blobs;
 using CatFactApp.Core;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Azure.Functions.Worker.OpenTelemetry;
@@ -17,6 +20,22 @@ builder.Services.AddSingleton(new BlobServiceClient(connectionString));
 builder.Services.AddCoreServices(builder.Configuration);
 
 builder.ConfigureFunctionsWebApplication();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // Polityka per adres IP
+    options.AddPolicy("FixedWindowPolicy", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "global",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 10,                
+                Window = TimeSpan.FromMinutes(1) 
+            }));
+});
 
 
 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")))

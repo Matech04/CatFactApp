@@ -7,7 +7,7 @@ namespace CatFactAPp.Core.Shared.Storage;
 
 public class AzureBlobStorage(BlobServiceClient blobServiceClient) : IFileStorage
 {
-    private const string ContainerName = "cat-facts";
+    private const string ContainerName = "catfacts";
     private const string BlobName = "facts.txt";
 
     public async Task SaveLineAsync(string line, CancellationToken ct)
