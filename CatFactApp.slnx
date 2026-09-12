@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/backend/">
+    <Project Path="src/backend/CatFactApp.Core/CatFactApp.Core.csproj" />
+    <Project Path="src/backend/CatFactApp.WebApi/CatFactApp.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/src/backend/CatFactApp.Functions/">
+    <Project Path="src/backend/CatFactApp.Functions/CatFactApp_Functions.csproj" />
+  </Folder>
+</Solution>

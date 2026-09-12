@@ -16,6 +16,4 @@ public static class CatFactEndpoints
         .RequireRateLimiting("fixed");
     }
 
-    //Przypomnieć sobie jak budowało się ProblemDetails
-
 }
