@@ -8,7 +8,7 @@ namespace CatFactFetcher.Functions.Features.GetStoredCatFacts;
 public class GetStoredCatFactsFunction(ILogger<GetStoredCatFactsFunction> logger, GetStoredCatFactsHandler handler)
 {
     [Function("GetStoredCatFacts")]
-    public async Task<IResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = "cat-fact")] HttpRequest req, CancellationToken ct)
+    public async Task<IResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cat-fact")] HttpRequest req, CancellationToken ct)
     {
         logger.LogInformation("Processing GetStoredCatFacts Functions request.");
 

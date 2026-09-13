@@ -8,7 +8,7 @@ namespace CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
 public class FetchAndSaveCatFactFunction(ILogger<FetchAndSaveCatFactFunction> logger, FetchAndSaveCatFactHandler handler)
 {
     [Function("FetchAndSaveCatFact")]
-    public async Task<IResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = "cat-fact")] HttpRequest req, CancellationToken ct)
+    public async Task<IResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "cat-fact")] HttpRequest req, CancellationToken ct)
     {
         logger.LogInformation("Processing FetchAndSaveCatFact Functions request.");
 
