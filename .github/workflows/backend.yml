@@ -1,9 +1,12 @@
-name: Build and deploy dotnet core project to Azure Function App - catfactapp
+name: Backend CI/CD - Azure Functions
 
 on:
   push:
     branches:
       - master
+    paths:
+      - 'src/backend/**'
+      - 'tests/**'
   workflow_dispatch:
 
 env:
@@ -11,27 +14,32 @@ env:
   DOTNET_VERSION: '10.0.x'
 
 jobs:
-  build-and-deploy:
+  build-test-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
 
     steps:
-      - name: 'Checkout GitHub Action'
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 'Publish Project Using Dotnet'
+      # --- KROK TESTÓW ---
+      - name: Run Tests
+        run: dotnet test --configuration Release --verbosity normal
+
+      # --- WDROŻENIE (Uruchomi się tylko jeśli testy przejdą) ---
+      - name: Publish Project
         shell: bash
         run: |
           dotnet publish ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }} --configuration Release --output ./publish
 
-      - name: 'Zip published output'
+      - name: Zip Published Output
         shell: bash
         run: |
           cd ./publish
@@ -44,7 +52,7 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_ACC65BC56A064B738C925123D4A71BDB }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_DDE5DC1C093B4FAFA7821E68FD83BE47 }}
 
-      - name: 'Run Azure Functions Action'
+      - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
         id: fa
         with:

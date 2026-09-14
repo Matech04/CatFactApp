@@ -1,13 +1,17 @@
-name: Azure Static Web Apps CI/CD
+name: Frontend CI/CD - Azure Static Web Apps
 
 on:
   push:
     branches:
       - master
+    paths:
+      - 'src/frontend/**'
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - master
+    paths:
+      - 'src/frontend/**'
 
 jobs:
   build_and_deploy_job:
@@ -18,13 +22,16 @@ jobs:
        id-token: write
        contents: read
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
         with:
           submodules: true
           lfs: false
-      - name: Install OIDC Client from Core Package
+
+      - name: Install OIDC Client
         run: npm install @actions/core@1.6.0 @actions/http-client
-      - name: Get Id Token
+
+      - name: Get ID Token
         uses: actions/github-script@v6
         id: idtoken
         with:
@@ -32,14 +39,15 @@ jobs:
                const coredemo = require('@actions/core')
                return await coredemo.getIDToken()
            result-encoding: string
-      - name: Build And Deploy
+
+      - name: Build And Deploy SWA
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ORANGE_WATER_05813AE0F }}
           action: "upload"
           app_location: "./src/frontend/CatFactApp.WebApp"
-          api_location: "" # Zostaw puste, aby SWA nie budowało backendu z .NET 10
+          api_location: ""
           output_location: "wwwroot"
           github_id_token: ${{ steps.idtoken.outputs.result }}
 

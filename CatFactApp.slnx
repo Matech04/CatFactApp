@@ -7,4 +7,7 @@
   <Folder Name="/src/backend/CatFactApp.Functions/">
     <Project Path="src/backend/CatFactApp.Functions/CatFactApp_Functions.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CatFactApp.Core.Tests/CatFactApp.Core.Tests.csproj" />
+  </Folder>
 </Solution>

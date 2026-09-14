@@ -34,7 +34,7 @@ public class AzureBlobStorage(BlobServiceClient blobServiceClient) : IFileStorag
         await appendBlobClient.AppendBlockAsync(memoryStream, cancellationToken: ct);
     }
 
-    public async Task<Stream> GetFileStreamAsync(CancellationToken ct = default)
+    public async Task<Stream?> GetFileStreamAsync(CancellationToken ct = default)
     {
         var containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
         var blobClient = containerClient.GetBlobClient(BlobName);
@@ -42,7 +42,7 @@ public class AzureBlobStorage(BlobServiceClient blobServiceClient) : IFileStorag
         if (!await blobClient.ExistsAsync(ct))
         {
             // Jeśli plik jeszcze nie istnieje, zwracamy pusty strumień
-            return Stream.Null;
+            return null;
         }
 
         // OpenReadAsync pobiera strumień z Azure Blob Storage do odczytu

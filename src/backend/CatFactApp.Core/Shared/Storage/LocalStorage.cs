@@ -4,7 +4,7 @@ namespace CatFactFetcher.Core.Share.Storage;
 
 public class LocalStorage(ILogger<LocalStorage> logger) : IFileStorage
 {
-
+    private const string FilePath = "facts.txt";
     private static readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
 
     public async Task SaveLineAsync(string line, CancellationToken ct)
@@ -22,22 +22,22 @@ public class LocalStorage(ILogger<LocalStorage> logger) : IFileStorage
 
     }
 
-    public async Task<Stream> GetFileStreamAsync(CancellationToken ct)
+    public Task<Stream?> GetFileStreamAsync(CancellationToken ct)
     {
-        await _semaphoreSlim.WaitAsync(ct);
-        try
-        {
 
-            if (!File.Exists("facts.txt"))
-            {
-                return Stream.Null;
-            }
-
-            return new FileStream("facts.txt", FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
-        }
-        finally
+        if (!File.Exists("facts.txt"))
         {
-            _semaphoreSlim.Release();
+            return Task.FromResult<Stream?>(null);
         }
+
+        var stream = new FileStream(
+        FilePath,
+        FileMode.Open,
+        FileAccess.Read,
+        FileShare.ReadWrite,
+        bufferSize: 4096,
+        useAsync: true);
+
+        return Task.FromResult<Stream?>(stream);
     }
 }
