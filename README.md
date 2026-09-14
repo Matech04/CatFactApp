@@ -54,6 +54,6 @@ Aby uniknąć ciągłego otwierania pliku, pobierania go z Azure Blob Storage or
 
 Projekt zawiera zestaw testów automatycznych pisanych z asystą agentów do kodowania w projekcie `CatFactApp.Core.Tests`:
 1. **Testy jednostkowe (Unit Tests):** Testują logikę biznesową handlerów (`FetchAndSaveCatFactHandler`, `GetStoredCatFactsHandler`), włączając w to parsowanie błędnych linii oraz inwalidację pamięci cache.
-2. **Testy integracyjne (Integration Tests):** Testy dla `AzureBlobStorage wykorzystują bibliotekę **Testcontainers** do uruchomienia prawdziwego emulatora **Azurite** w kontenerze Docker. Dzięki temu testujemy rzeczywistą komunikację z Azure Blob Storage bez konieczności mockowania SDK.
+2. **Testy integracyjne (Integration Tests):** Testy dla `AzureBlobStorage` wykorzystują bibliotekę **Testcontainers** do uruchomienia prawdziwego emulatora **Azurite** w kontenerze Docker. Dzięki temu testujemy rzeczywistą komunikację z Azure Blob Storage bez konieczności mockowania SDK.
 
 ---
