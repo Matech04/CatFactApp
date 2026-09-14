@@ -71,7 +71,7 @@
         try
         {
             // Zapytanie GET pod odpowiedni endpoint
-            var response = await Http.GetAsync("/cat-fact");
+            var response = await Http.GetAsync("cat-fact");
 
             if (response.IsSuccessStatusCode)
             {

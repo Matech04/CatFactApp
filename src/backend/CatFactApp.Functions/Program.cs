@@ -19,13 +19,24 @@ builder.Services.AddSingleton(new BlobServiceClient(connectionString));
 
 builder.Services.AddCoreServices(builder.Configuration);
 
-builder.ConfigureFunctionsWebApplication();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                  "https://orange-water-05813ae0f.azurestaticapps.net"
+              )
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+
 
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-    // Polityka per adres IP
     options.AddPolicy("FixedWindowPolicy", httpContext =>
         RateLimitPartition.GetFixedWindowLimiter(
             partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "global",

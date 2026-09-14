@@ -7,7 +7,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 
-var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? builder.HostEnvironment.BaseAddress;
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5000")});
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "https://catfactapp-bbd5afgbfpezbah0.polandcentral-01.azurewebsites.net/api/";
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl)});
 
 await builder.Build().RunAsync();
