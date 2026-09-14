@@ -13,6 +13,9 @@ public static class DependencyInjection
 
     public static IServiceCollection AddCoreServices(this IServiceCollection services, IConfiguration configuration)
     {
+
+        services.AddMemoryCache();
+
         services.AddHttpClient<FetchAndSaveCatFactHandler>().AddStandardResilienceHandler();
 
         services.AddScoped<GetStoredCatFactsHandler>();

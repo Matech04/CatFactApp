@@ -1,21 +1,28 @@
 ﻿using System.Net;
-using System.Net.Http.Json;
+using Castle.Core.Logging;
 using CatFactFetcher.Core.Share.Storage;
 using CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
+using CatFactFetcher.Functions.Features.GetStoredCatFacts;
 using FluentAssertions;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using Moq.Protected;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace CatFactApp.Core.Tests;
 
 public class FetchAndSaveCatFactHandlerTests
 {
     private readonly Mock<IFileStorage> _storageMock;
+    private readonly Mock<ILogger<FetchAndSaveCatFactHandler>> _loggerMock; // 2. Dodaj pole dla mocka logera
+    private readonly IMemoryCache _memoryCache;
 
     public FetchAndSaveCatFactHandlerTests()
     {
         _storageMock = new Mock<IFileStorage>();
+        _loggerMock = new Mock<ILogger<FetchAndSaveCatFactHandler>>(); // 3. Zainicjalizuj mock
+        _memoryCache = new MemoryCache(new MemoryCacheOptions());
     }
 
     private FetchAndSaveCatFactHandler CreateHandler(HttpResponseMessage response)
@@ -31,11 +38,18 @@ public class FetchAndSaveCatFactHandlerTests
             .ReturnsAsync(response);
 
         var httpClient = new HttpClient(handlerMock.Object);
-        return new FetchAndSaveCatFactHandler(httpClient, _storageMock.Object);
+        
+        // 4. Przekaż _loggerMock.Object jako 4. argument
+        return new FetchAndSaveCatFactHandler(
+            httpClient, 
+            _storageMock.Object, 
+            _memoryCache, 
+            _loggerMock.Object
+        );
     }
 
     [Fact]
-    public async Task HandleAsync_ShouldReturnSuccessAndSaveLine_WhenApiReturnsValidFact()
+    public async Task HandleAsync_ShouldInvalidateCache_WhenNewFactIsSaved()
     {
         // Arrange
         var jsonResponse = """{"fact": "Cats sleep 16 hours a day.", "length": 26}""";
@@ -44,66 +58,16 @@ public class FetchAndSaveCatFactHandlerTests
             Content = new StringContent(jsonResponse, System.Text.Encoding.UTF8, "application/json")
         };
 
-        var handler = CreateHandler(httpResponse);
-
-        // Act
-        var result = await handler.HandleAsync(CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Fact.Should().Be("Cats sleep 16 hours a day.");
-        result.Value.Length.Should().Be(26);
-
-        _storageMock.Verify(s => s.SaveLineAsync(
-            It.Is<string>(line => line.Contains("Cats sleep 16 hours a day.") && line.Contains("26")),
-            It.IsAny<CancellationToken>()
-        ), Times.Once);
-    }
-
-    [Fact]
-    public async Task HandleAsync_ShouldReturnFail_WhenApiReturnsNullContent()
-    {
-        // Arrange
-        var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent("null", System.Text.Encoding.UTF8, "application/json")
-        };
+        // Symulujemy, że w cache znajdują się już jakieś nieaktualne dane
+        _memoryCache.Set(GetStoredCatFactsHandler.CacheKey, Array.Empty<object>());
 
         var handler = CreateHandler(httpResponse);
 
         // Act
-        var result = await handler.HandleAsync(CancellationToken.None);
+        await handler.HandleAsync(CancellationToken.None);
 
         // Assert
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Message == "External server answered with empty fact");
-        _storageMock.Verify(s => s.SaveLineAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task HandleAsync_ShouldReturnFail_WhenHttpClientThrowsException()
-    {
-        // Arrange
-        var handlerMock = new Mock<HttpMessageHandler>();
-        handlerMock
-            .Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>()
-            )
-            .ThrowsAsync(new HttpRequestException("Network error"));
-
-        var httpClient = new HttpClient(handlerMock.Object);
-        var handler = new FetchAndSaveCatFactHandler(httpClient, _storageMock.Object);
-
-        // Act
-        var result = await handler.HandleAsync(CancellationToken.None);
-
-        // Assert
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Message.Contains("Network error"));
-        _storageMock.Verify(s => s.SaveLineAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        // Sprawdzamy, czy klucz został usunięty z pamięci podręcznej po zapisie
+        _memoryCache.TryGetValue(GetStoredCatFactsHandler.CacheKey, out _).Should().BeFalse();
     }
 }

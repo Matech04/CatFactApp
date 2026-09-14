@@ -1,17 +1,20 @@
 using System.Net.Http.Json;
 using CatFactFetcher.Core.Share.Storage;
 using CatFactFetcher.Core.Shared.Entities;
+using CatFactFetcher.Functions.Features.GetStoredCatFacts;
 using FluentResults;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
 
-public class FetchAndSaveCatFactHandler(HttpClient _httpClient, IFileStorage _storage)
+public class FetchAndSaveCatFactHandler(HttpClient httpClient, IFileStorage storage, IMemoryCache cache, ILogger<FetchAndSaveCatFactHandler> logger)
 {
     public async Task<Result<CatFactRecord>> HandleAsync(CancellationToken ct)
     {
         try
         {
-            var result = await _httpClient.GetFromJsonAsync<CatFactDto>(new Uri("https://catfact.ninja/fact"), ct);
+            var result = await httpClient.GetFromJsonAsync<CatFactDto>(new Uri("https://catfact.ninja/fact"), ct);
 
             if (result is null)
             {
@@ -19,12 +22,15 @@ public class FetchAndSaveCatFactHandler(HttpClient _httpClient, IFileStorage _st
             }
 
             string line = $"{DateTime.UtcNow} | {result.Fact} | {result.Length}";
-            await _storage.SaveLineAsync(line, ct);
+            await storage.SaveLineAsync(line, ct);
+
+            cache.Remove(GetStoredCatFactsHandler.CacheKey);
 
             return Result.Ok(new CatFactRecord(DateTime.UtcNow, result.Fact, result.Length));
         }
         catch (Exception ex)
         {
+            logger.LogWarning($"Exception while adding fact to list: {ex.Message}");
             return Result.Fail(ex.Message);
         }
     }
