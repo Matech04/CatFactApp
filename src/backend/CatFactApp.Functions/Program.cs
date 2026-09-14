@@ -7,31 +7,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Azure.Functions.Worker.OpenTelemetry;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
 
 var builder = FunctionsApplication.CreateBuilder(args);
+builder.ConfigureFunctionsWebApplication();
 
-var connectionString = builder.Configuration["CustomBlobStorageConnection"] ?? "UseDevelopmentStorage = true";
+
+var connectionString = builder.Configuration["CustomBlobStorageConnection"] ?? "UseDevelopmentStorage=true";
 
 builder.Services.AddSingleton(new BlobServiceClient(connectionString));
 
 builder.Services.AddCoreServices(builder.Configuration);
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins(
-                  "https://orange-water-05813ae0f.azurestaticapps.net"
-              )
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
-
-
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -43,8 +32,8 @@ builder.Services.AddRateLimiter(options =>
             factory: partition => new FixedWindowRateLimiterOptions
             {
                 AutoReplenishment = true,
-                PermitLimit = 10,                
-                Window = TimeSpan.FromMinutes(1) 
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1)
             }));
 });
 

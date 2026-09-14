@@ -3,7 +3,7 @@ public static class CatFactEndpoints
 {
     public static void MapGetStoredCatFactsEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("cat-fact");
+        var group = app.MapGroup("api/cat-fact");
 
         group.MapGet("/", async (GetStoredCatFactsHandler handler, CancellationToken ct) =>
         {

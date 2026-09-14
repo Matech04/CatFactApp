@@ -1,4 +1,4 @@
-using CatFactAPp.Core.Shared.Storage;
+using CatFactApp.Core.Shared.Storage;
 using CatFactFetcher.Core.Share.Storage;
 using CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
 using CatFactFetcher.Functions.Features.GetStoredCatFacts;

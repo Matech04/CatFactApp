@@ -3,7 +3,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using CatFactFetcher.Core.Share.Storage;
 
-namespace CatFactAPp.Core.Shared.Storage;
+namespace CatFactApp.Core.Shared.Storage;
 
 public class AzureBlobStorage(BlobServiceClient blobServiceClient) : IFileStorage
 {

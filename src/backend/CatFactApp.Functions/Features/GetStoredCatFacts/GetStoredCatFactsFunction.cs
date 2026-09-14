@@ -15,7 +15,7 @@ public class GetStoredCatFactsFunction(ILogger<GetStoredCatFactsFunction> logger
         var result = await handler.HandleAsync(ct);
 
         return result.IsSuccess
-            ? Results.Ok(result.Value)
-            : Results.Problem();
+            ? TypedResults.Ok(result.Value)
+            : TypedResults.Problem();
     }
 }

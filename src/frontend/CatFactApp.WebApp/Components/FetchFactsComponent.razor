@@ -53,7 +53,7 @@
         try
         {
             // Strzał do Twojego endpointu w .NET API
-            var response = await Http.PostAsync("cat-fact", null);
+            var response = await Http.PostAsync("api/cat-fact", null);
 
             if (response.IsSuccessStatusCode)
             {

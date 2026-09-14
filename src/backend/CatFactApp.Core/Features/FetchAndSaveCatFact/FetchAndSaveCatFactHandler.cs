@@ -1,12 +1,13 @@
 using System.Net.Http.Json;
 using CatFactFetcher.Core.Share.Storage;
+using CatFactFetcher.Core.Shared.Entities;
 using FluentResults;
 
 namespace CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
 
 public class FetchAndSaveCatFactHandler(HttpClient _httpClient, IFileStorage _storage)
 {
-    public async Task<Result<CatFactDto>> HandleAsync(CancellationToken ct)
+    public async Task<Result<CatFactRecord>> HandleAsync(CancellationToken ct)
     {
         try
         {
@@ -20,7 +21,7 @@ public class FetchAndSaveCatFactHandler(HttpClient _httpClient, IFileStorage _st
             string line = $"{DateTime.UtcNow} | {result.Fact} | {result.Length}";
             await _storage.SaveLineAsync(line, ct);
 
-            return Result.Ok(result);
+            return Result.Ok(new CatFactRecord(DateTime.UtcNow, result.Fact, result.Length));
         }
         catch (Exception ex)
         {

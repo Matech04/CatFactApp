@@ -1,2 +1,2 @@
-namespace CatFactFetcher.Functions.Features.GetStoredCatFacts;
+namespace CatFactFetcher.Core.Shared.Entities;
 public record CatFactRecord(DateTime CreatedAt, string Fact, int Length);

@@ -4,7 +4,7 @@ public static class CatFactEndpoints
 {
     public static void MapFetchAndSaveCatFactEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("cat-fact");
+        var group = app.MapGroup("api/cat-fact");
     
         group.MapPost("/", async (FetchAndSaveCatFactHandler handler, CancellationToken ct) => {
             

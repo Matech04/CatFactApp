@@ -3,13 +3,12 @@ namespace CatFactFetcher.Functions.Features.GetStoredCatFacts;
 using CatFactFetcher.Core.Share.Storage;
 using FluentResults;
 using Microsoft.Extensions.Logging;
+using CatFactFetcher.Core.Shared.Entities;
 
 public class GetStoredCatFactsHandler(ILogger<GetStoredCatFactsHandler> logger, IFileStorage storage)
 {
     public async Task<Result<CatFactRecord[]>> HandleAsync(CancellationToken ct)
     {
-
-        logger.LogWarning(storage.GetType().Name);
 
         await using var fileStream = await storage.GetFileStreamAsync(ct);
 

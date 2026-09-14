@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using CatFactApp.Core;
 using CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
 using CatFactFetcher.Functions.Features.GetStoredCatFacts;
@@ -7,16 +8,22 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration["CustomBlobStorageConnection"] ?? "UseDevelopmentStorage=true";
+
+builder.Services.AddSingleton(new BlobServiceClient(connectionString));
+
 builder.Services.AddCoreServices(builder.Configuration);
 
 builder.Services.AddOpenApi();
 
+var allowedOrigins = builder.Configuration.GetSection("AllowedCorsOrigins").Get<string[]>() 
+    ?? new[] { "http://localhost:5184" };
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazor", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
@@ -48,7 +55,10 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowBlazor");
 app.UseRateLimiter();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.MapFetchAndSaveCatFactEndpoints();
 app.MapGetStoredCatFactsEndpoints();
