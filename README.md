@@ -4,8 +4,10 @@ Projekt zrealizowany w ramach zadania rekrutacyjnego do **Szkółki .NET (Netwis
 
 Głównym celem aplikacji jest pobieranie losowych ciekawostek o kotach z zewnętrznego API (`https://catfact.ninja/fact`) oraz ich trwały zapis w formacie tekstowym, linia po linii.
 
-Prosty frontend dla aplikacji można sprawdzić tutaj: `https://orange-water-05813ae0f.3.azurestaticapps.net/`
-
+Aplikacja jest w pełni zhostowana w chmurze **Microsoft Azure**:
+* 🌐 **Frontend (Blazor WASM):** `https://orange-water-05813ae0f.3.azurestaticapps.net/` (Azure Static Web Apps)
+* ⚡ **Backend (Azure Functions):** `https://catfactapp-bbd5afgbfpezbah0.polandcentral-01.azurewebsites.net/`
+* ☁️ **Storage:** Azure Blob Storage
 ---
 
 ## 🏛️ Architektura i decyzje projektowe
