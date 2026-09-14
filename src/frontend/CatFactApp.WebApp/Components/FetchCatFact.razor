@@ -1,0 +1,87 @@
+@using CatFactApp.WebApp.Models
+@inject HttpClient Http
+
+<div class="card shadow-sm border-0 bg-light mb-4">
+    <div class="card-body p-4 text-center">
+        <h2 class="h4 mb-2">🎲 Pobierz nowy fakt</h2>
+        <p class="text-muted mb-3">Kliknij przycisk poniżej, aby pobrać i zapisać nowy fakt o kocie.</p>
+
+        <button class="btn btn-primary shadow-sm" @onclick="GetCatFact" disabled="@isLoading">
+            @if (isLoading)
+            {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span>Pobieranie...</span>
+            }
+            else
+            {
+                <span>🎲 Pobierz fakt</span>
+            }
+        </button>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger shadow-sm mt-3 mb-0" role="alert">
+                @errorMessage
+            </div>
+        }
+
+        @if (factDto != null)
+        {
+            <div class="card shadow-sm border-start border-4 border-primary mt-3 text-start">
+                <div class="card-body">
+                    <p class="fs-6 card-text">"@factDto.Fact"</p>
+                    <div class="d-flex justify-content-between align-items-center text-muted mt-2 pt-2 border-top">
+                        <small>Długość: <strong>@factDto.Length</strong> znaków</small>
+                        <span class="badge bg-success">Zapisano w repozytorium</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnFactAdded { get; set; }
+
+    private CatFactDto? factDto;
+    private bool isLoading = false;
+    private string? errorMessage;
+
+    private async Task GetCatFact()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var response = await Http.PostAsync("api/cat-fact", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                factDto = await response.Content.ReadFromJsonAsync<CatFactDto>();
+                
+                if (OnFactAdded.HasDelegate)
+                {
+                    await OnFactAdded.InvokeAsync();
+                }
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+            {
+                errorMessage = "⚠️ Przekroczono limit zapytań (Rate Limiter). Spróbuj za chwilę!";
+            }
+            else
+            {
+                errorMessage = $"Błąd serwera: {(int)response.StatusCode} {response.ReasonPhrase}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Nie udało się połączyć z API: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
