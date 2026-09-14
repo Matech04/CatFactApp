@@ -1,12 +1,12 @@
 using System.Net.Http.Json;
+using CatFactApp.Core.Features.GetStoredCatFacts;
 using CatFactFetcher.Core.Share.Storage;
 using CatFactFetcher.Core.Shared.Entities;
-using CatFactFetcher.Functions.Features.GetStoredCatFacts;
 using FluentResults;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
-namespace CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
+namespace CatFactApp.Core.Features.FetchAndSaveCatFact;
 
 public class FetchAndSaveCatFactHandler(HttpClient httpClient, IFileStorage storage, IMemoryCache cache, ILogger<FetchAndSaveCatFactHandler> logger)
 {

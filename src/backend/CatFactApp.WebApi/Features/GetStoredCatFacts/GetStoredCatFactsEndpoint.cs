@@ -1,4 +1,6 @@
-namespace CatFactFetcher.Functions.Features.GetStoredCatFacts;
+using CatFactApp.Core.Features.GetStoredCatFacts;
+
+namespace CatFactApp.WebApi.Features.GetStoredCatFacts;
 public static class CatFactEndpoints
 {
     public static void MapGetStoredCatFactsEndpoints(this IEndpointRouteBuilder app)

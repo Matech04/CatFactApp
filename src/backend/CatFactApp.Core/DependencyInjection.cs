@@ -1,7 +1,7 @@
+using CatFactApp.Core.Features.FetchAndSaveCatFact;
+using CatFactApp.Core.Features.GetStoredCatFacts;
 using CatFactApp.Core.Shared.Storage;
 using CatFactFetcher.Core.Share.Storage;
-using CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
-using CatFactFetcher.Functions.Features.GetStoredCatFacts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

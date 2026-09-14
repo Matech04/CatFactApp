@@ -1,14 +1,14 @@
 ﻿using System.Net;
 using Castle.Core.Logging;
 using CatFactFetcher.Core.Share.Storage;
-using CatFactFetcher.Functions.Features.FetchAndSaveCatFact;
-using CatFactFetcher.Functions.Features.GetStoredCatFacts;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using Moq.Protected;
 using Xunit;
 using Microsoft.Extensions.Logging;
+using CatFactApp.Core.Features.FetchAndSaveCatFact;
+using CatFactApp.Core.Features.GetStoredCatFacts;
 
 namespace CatFactApp.Core.Tests;
 

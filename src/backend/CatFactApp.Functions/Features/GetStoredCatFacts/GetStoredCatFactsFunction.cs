@@ -1,3 +1,5 @@
+using CatFactApp.Core.Features.GetStoredCatFacts;
+using CatFactApp.Functions.Extensions;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
@@ -14,8 +16,6 @@ public class GetStoredCatFactsFunction(ILogger<GetStoredCatFactsFunction> logger
 
         var result = await handler.HandleAsync(ct);
 
-        return result.IsSuccess
-            ? TypedResults.Ok(result.Value)
-            : TypedResults.Problem();
+        return result.ToProblemDetails();
     }
 }

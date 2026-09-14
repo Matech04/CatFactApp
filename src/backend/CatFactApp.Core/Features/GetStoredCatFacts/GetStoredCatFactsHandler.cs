@@ -1,4 +1,4 @@
-namespace CatFactFetcher.Functions.Features.GetStoredCatFacts;
+namespace CatFactApp.Core.Features.GetStoredCatFacts;
 
 using CatFactFetcher.Core.Share.Storage;
 using FluentResults;

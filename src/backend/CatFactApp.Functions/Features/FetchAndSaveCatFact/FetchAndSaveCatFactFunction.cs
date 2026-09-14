@@ -1,3 +1,5 @@
+using CatFactApp.Core.Features.FetchAndSaveCatFact;
+using CatFactApp.Functions.Extensions;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
@@ -14,8 +16,6 @@ public class FetchAndSaveCatFactFunction(ILogger<FetchAndSaveCatFactFunction> lo
 
         var result = await handler.HandleAsync(ct);
 
-        return result.IsSuccess
-            ? Results.Ok(result.Value)
-            : Results.Problem();
+        return result.ToProblemDetails();
     }
 }

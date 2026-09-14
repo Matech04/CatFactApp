@@ -1,6 +1,6 @@
 using System.Text;
+using CatFactApp.Core.Features.GetStoredCatFacts;
 using CatFactFetcher.Core.Share.Storage;
-using CatFactFetcher.Functions.Features.GetStoredCatFacts;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
